@@ -79,7 +79,9 @@ const generateReport = async (
 
     const html = generateReportHtml({ config: resolvedConfig });
 
-    const fileName = `${sessionId}-${reportData.assessment_id}.pdf`;
+    const fileName = `${sessionId}-${
+      reportData.assessment_id
+    }-${Date.now()}.pdf`;
     const pdfPath = path.join(__dirname, "../../../reports", fileName);
     mkdirSync(path.dirname(pdfPath), { recursive: true });
 
@@ -128,7 +130,7 @@ const dynamicReportGeneration = async (
     const resolvedConfig = buildResolvedConfig(data, config);
     const html = generateReportHtml({ config: resolvedConfig });
 
-    const fileName = `${session_id}-${assessment_id}.pdf`;
+    const fileName = `${session_id}-${assessment_id}-${Date.now()}.pdf`;
     const pdfPath = path.join(__dirname, "../../../reports", fileName);
     mkdirSync(path.dirname(pdfPath), { recursive: true });
 
