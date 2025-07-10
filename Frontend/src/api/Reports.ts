@@ -35,4 +35,16 @@ const downloadReport = async (reportId: string) => {
   }
 };
 
-export { generateReport, listReports, downloadReport };
+const generateDynamicReport = async (data: object) => {
+  try {
+    const response = await axiosInstance.post(
+      `${API_URL}/generate-dynamic-report`,
+      data
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export { generateReport, listReports, downloadReport, generateDynamicReport };

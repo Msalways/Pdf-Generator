@@ -109,6 +109,41 @@ const listReport = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const dynamicReportGeneration = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { jsonData: data } = req.body;
+    console.log(data);
+
+    const { session_id, assessment_id } = data;
+
+    if (!session_id || !assessment_id) {
+      throw new Error("Session ID and Assessment ID are required");
+    }
+
+    const config = generateDynamicConfig(data);
+    const resolvedConfig = buildResolvedConfig(data, config);
+    const html = generateReportHtml({ config: resolvedConfig });
+
+    const fileName = `${session_id}-${assessment_id}.pdf`;
+    const pdfPath = path.join(__dirname, "../../../reports", fileName);
+    mkdirSync(path.dirname(pdfPath), { recursive: true });
+
+    await generatePDFOnHTML(html, pdfPath);
+
+    await prisma.reports.create({
+      data: { sessionId: session_id, reportPath: pdfPath, fileName },
+    });
+
+    res.status(200).send("Report generated successfully");
+  } catch (error) {
+    next(error);
+  }
+};
+
 const downloadReport = async (
   req: Request,
   res: Response,
@@ -142,4 +177,4 @@ const downloadReport = async (
   }
 };
 
-export { generateReport, listReport, downloadReport };
+export { generateReport, listReport, downloadReport, dynamicReportGeneration };
